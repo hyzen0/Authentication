@@ -1,44 +1,37 @@
 const express = require("express");
-const morgan = require("morgan");
-const connectDB = require("./config/db");
+const mongoose = require("mongoose");
+const bodyparser = require("body-parser");
+const passport = require("passport");
 
-const cors = require("cors");
-
-// Config dotev...
-require("dotenv").config({
-  path: "./config/config.env",
-});
+const auth = require("./routes/api/auth");
+const profile = require("./routes/api/profile");
 
 const app = express();
 
-// Connect to database
-connectDB();
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
 
-// Load routes
-const authRouter = require("./api/auth.route");
+const db = require("./setup/myurl").mongoURL;
 
-// Dev Logging Middleware
-if (process.env.NODE_ENV === "development") {
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-    })
-  );
-  app.use(morgan("dev"));
-}
+mongoose
+  .connect(db)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch(err => console.log(err));
 
-// Use Routes
-app.use("/api", authRouter);
+app.use(passport.initialize());
 
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    msg: "Page not found",
-  });
+require("./strategies/jsonwtStrategy")(passport);
+
+app.get("/", (req, res) => {
+  res.send("Working");
 });
 
-const PORT = process.env.PORT || 5000;
+app.use("/api/auth", auth);
+app.use("/api/questions", questions);
+app.use("/api/profile", profile);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => console.log(`Running`));
