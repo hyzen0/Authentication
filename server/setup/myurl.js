@@ -1,5 +1,5 @@
 module.exports = {
   mongoURL:
-    "mongodb+srv://Hyzen:Imbatman1@cluster0.u7pzn.mongodb.net/rajat?retryWrites=true&w=majority",
+    "mongodb+srv://hyzen:imbatman@cluster0.roam8.mongodb.net/hyzen?retryWrites=true&w=majority",
   secret: "imbatman",
 };

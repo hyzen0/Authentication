@@ -3,15 +3,15 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jsonwt = require("jsonwebtoken");
 const passport = require("passport");
-const key = require("../../setup/myurl");
+const key = require("../setup/myurl");
 
 router.get("/", (req, res) => res.json({ Test: "Auth is being tested" }));
 
-const Person = require("../../models/Person");
+const Person = require("../models/Person");
 
 router.post("/register", (req, res) => {
   Person.findOne({ email: req.body.email })
-    .then((person) => {
+    .then(person => {
       if (person) {
         return res
           .status(400)
@@ -28,13 +28,13 @@ router.post("/register", (req, res) => {
             newPerson.password = hash;
             newPerson
               .save()
-              .then((person) => res.json(person))
-              .catch((err) => console.log(err));
+              .then(person => res.json(person))
+              .catch(err => console.log(err));
           });
         });
       }
     })
-    .catch((err) => console.log(err));
+    .catch(err => console.log(err));
 });
 
 router.post("/login", (req, res) => {
@@ -42,7 +42,7 @@ router.post("/login", (req, res) => {
   const password = req.body.password;
 
   Person.findOne({ email })
-    .then((person) => {
+    .then(person => {
       if (!person) {
         return res
           .status(404)
@@ -50,7 +50,7 @@ router.post("/login", (req, res) => {
       }
       bcrypt
         .compare(password, person.password)
-        .then((isCorrect) => {
+        .then(isCorrect => {
           if (isCorrect) {
             // res.json({ success: "Authentication Succesfull" });
             const payload = {
@@ -74,9 +74,9 @@ router.post("/login", (req, res) => {
             res.status(400).json({ passworderror: " Password is not correct" });
           }
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     })
-    .catch((err) => console.log(err));
+    .catch(err => console.log(err));
 });
 
 router.get(
